@@ -1,0 +1,42 @@
+@import "../styles/variable";
+@import "../styles/mixing";
+
+.pokemonCard{
+    @include box-style();
+    width: $widthCard;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    transition: transform .2s ease-in-out;
+    cursor: pointer;
+    // child
+    .pokemonCard-image{
+        margin-top: -75px;
+        width: 120px;
+    }
+    .pokemonCard-number{
+        @include pokemonCard-text($n-size, $grey)
+    }
+    .pokemonCard-name{
+        @include pokemonCard-text($l-size)
+    }
+    .pokemonCard-type{
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        // child
+        .pokemonCard-type_element{
+            padding: 5px 10px;
+            border-radius: 7px;
+            box-shadow: 0 0 2px 0px #00000029;
+        }
+    }
+    // pseudo-class
+    &:hover{
+        transform: translateY(-10px);
+        transition: transform .3s ease-in-out;
+    }
+}

@@ -1,0 +1,41 @@
+@import "base";
+@import "variable";
+@import "../components/Card";
+@import "../components/InformationCard";
+@import "../components/InfoSpan";
+@import "mixing";
+
+
+body{
+    background-color: $bg;
+    h1 {
+        @include box-style();
+        width: 500px;
+        text-align: center;
+        margin: 50px auto;
+        border: 1px solid red;
+    }
+    h2,h3 {
+        font-size: $n-size;
+    }
+
+
+    .pokedex-container{
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        gap: 50px;
+        margin-top: 75px;
+        align-items: flex-start;
+        justify-content: center;
+        // child
+        .pokedex-container_list{
+            display: grid;
+            max-width: 1000px;
+            column-gap: 35px;
+            row-gap: 75px;
+            grid-template-columns: repeat(auto-fit, minmax($widthCard, 1fr));
+        }
+    }
+}
+

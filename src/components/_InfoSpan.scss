@@ -1,0 +1,11 @@
+@import '../styles/variable';
+
+.InfoSpan{
+    background: $bg;
+    border: 1px solid $grey;
+    padding: 5px 20px;
+    border-radius: 10px;
+    font-size: $n-size;
+    display: inline-block;
+    width: 100px;
+}

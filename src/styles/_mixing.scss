@@ -1,0 +1,13 @@
+@mixin pokemonCard-text($font-size, $color:null) {
+    font-size: $font-size;
+    @if $color {
+        color: $color;
+    }
+}
+
+@mixin box-style($padding:10px, $border-radius: 20px) {
+    background-color: $white;
+    box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.16);
+    padding: $padding;
+    border-radius: $border-radius;
+}
