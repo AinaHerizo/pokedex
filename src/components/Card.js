@@ -22,16 +22,17 @@ const styleColor = {
     dark: "rgb(65, 25, 25)",
 }
 
-const Card = ({pokemonTypes}) => {
-    const backgroundColor = styleColor[pokemonTypes];
+const Card = ({pokemonImage ,pokemonId , pokemonName, pokemonTypes}) => {
 
   return (
     <div className="pokemonCard">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png" className="pokemonCard-image"/>
-        <p className="pokemonCard-number">N°numéro</p>
-        <p className="pokemonCard-name">Name</p>
+        <img src={pokemonImage} className="pokemonCard-image"/>
+        <p className="pokemonCard-number">N°{pokemonId}</p>
+        <p className="pokemonCard-name">{pokemonName}</p>
         <p className="pokemonCard-type">
-            <span className="pokemonCard-type_element" style={{backgroundColor:"red"}}>Type 1</span><span className="pokemonCard-type_element" style={{backgroundColor:"pink"}}>Type 2</span>
+            {pokemonTypes.map((eachPokemonType) => (
+              <span className="pokemonCard-type_element" style={{background:styleColor[eachPokemonType]}}>{eachPokemonType}</span>
+            ))}
         </p>
     </div>
   )

@@ -5,6 +5,9 @@ import NumberTo from "./components/NumberTo.js"
 import TypeFilter from "./components/TypeFilter.js"
 import RefreshOutlinedIcon from '@mui/icons-material/RefreshOutlined'
 import Pagination from '@mui/material/Pagination'
+import axios  from "axios"
+import { useEffect, useState } from 'react'
+import Skeleton from '@mui/material/Skeleton'
 
 // STYLE
 const colorStyle = {
@@ -12,6 +15,79 @@ const colorStyle = {
 }
 
 function App() {
+  // STATE
+  const [pokedex, setPokedex] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [maxElement, setMaxElement] = useState()
+  const elementPerPage = 9
+  const [numberPage, setNumberPage] = useState()
+  const [actualInformationBlock, setActualInformationBlock] = useState()
+    // test
+    // const [details, setDetails] = useState([])
+    // endtest
+  // END STATE
+
+  // AXIOS
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=648")
+      const pokedexJson = response.data.results
+      // take max element
+      setMaxElement(pokedexJson.length)
+      // axios each pokemon detail
+      const detailsPokemon = await Promise.all(
+        pokedexJson.map(async (eachPokemon) => {
+          try {
+            const eachPokemonUrl = eachPokemon.url
+            const eachPokemonResponse = await axios.get(eachPokemonUrl)
+            const eachPokemonImage = eachPokemonResponse.data.sprites.front_default
+            const eachPokemonId = eachPokemonResponse.data.id
+            const eachPokemonName = eachPokemonResponse.data.name
+            const eachPokemonTypes = eachPokemonResponse.data.types.map((eachType)=> eachType.type.name)
+            return {
+              url:eachPokemonUrl,
+              id:eachPokemonId,
+              image:eachPokemonImage,
+              name:eachPokemonName,
+              types:eachPokemonTypes,
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        })
+      )
+      setPokedex(detailsPokemon.filter((pokemon) => pokemon !== null))
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  // END AXIOS
+
+  // OTHER FUNCTION
+  // useEffect for fetch the data
+    useEffect(() => {
+      fetchData()
+  }, [])
+  // useEffect for the number of page
+    useEffect(() => {
+      if (maxElement) { // Assure-toi que maxElement est défini
+        setNumberPage(Math.ceil(maxElement / elementPerPage)) // Math.ceil pour arrondir au nombre entier supérieur
+      }
+    }, [maxElement])
+    // current page and number of pokemon in each page
+      const indexOfLastPokemonInThePage = currentPage * elementPerPage
+      const indexOfFirstPokemonInThePage = indexOfLastPokemonInThePage - elementPerPage
+      const pokemonInPage = pokedex.slice(indexOfFirstPokemonInThePage,indexOfLastPokemonInThePage)
+      // handle the changement of page
+      const handlePageChange = (newPage) => {
+        setCurrentPage(newPage)
+      };
+
+  // console.log for test
+  // console.log(pokedex);
+  
+  
+
   return (
     <div className="pokedex">
       <h1>Pokédex Alpha</h1>
@@ -33,18 +109,18 @@ function App() {
       </div>
       <div className="pokedex-container">
         <div className="pokedex-container_list">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Pagination count={10} variant="outlined" className="pageSwitch"/>
+          {pokedex.length === 0 ?
+            Array.from({ length: 9 }).map((_, index) => (
+              <Skeleton key={index} variant="rectangular" width={280} height={150} />
+            ))
+            : 
+            pokemonInPage.map((eachPokemonInPokedex) => (
+              <Card pokemonImage={eachPokemonInPokedex.image} pokemonId={eachPokemonInPokedex.id}  pokemonName={eachPokemonInPokedex.name} pokemonTypes={eachPokemonInPokedex.types}/>
+            ))
+          }
+          <Pagination count={numberPage} variant="outlined" className="pageSwitch" onChange={(event, value) => handlePageChange(value)} page={currentPage}/>
         </div>
-        <InformationCard />
+        <InformationCard url="https://pokeapi.co/api/v2/pokemon/1/"/>
       </div>
     </div>
   );

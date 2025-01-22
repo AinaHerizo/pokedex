@@ -4,24 +4,93 @@ import InfoSpan from './InfoSpan.js'
 import InfoStat from './InfoStat.js'
 import EvolutionLineage from './EvolutionLineage.js'
 import Button from './Button.js'
+import axios  from "axios"
+import { useEffect, useState } from 'react'
+import Skeleton from '@mui/material/Skeleton'
 
-const InformationCard = () => {
+const InformationCard = ({url}) => {
+  // STATE
+  const [informationAboutThePokemon, setInformationAboutThePokemon] = useState({})
+  // test
+  const [state, setstate] = useState()
+  
+  // AXIOS
+  const fecthDataSinglePokemon = async () => {
+    try {
+      // pokemon url
+      const response = await axios.get(url)
+      const pokemonDetails = response.data
+      const pokemonId = pokemonDetails.id
+      const pokemonName = pokemonDetails.name
+      const pokemonBaseExp = pokemonDetails.base_experience
+      const pokemonHeight = pokemonDetails.height
+      const pokemonWeight = pokemonDetails.weight
+      const pokemonImage = pokemonDetails.sprites.front_default
+      const pokemonAbilities = pokemonDetails.abilities.map((eachAbilitie) => eachAbilitie.ability.name)
+      const pokemonStats = pokemonDetails.stats.map((eachStat) => eachStat.base_stat)
+      // pokedex url
+      const pokedexUrlResponse = await axios.get(pokemonDetails.species.url)
+      const pokedexData = pokedexUrlResponse.data
+      const pokemonPokedexEntry = pokedexData.flavor_text_entries.find((entry) => entry.language.name === "en" && entry.version.name === "shield")?.flavor_text || "No description available"
+      // evolution url
+      const evolutionChainUrlResponse = await axios.get(pokedexData.evolution_chain.url)
+      const evolutionChainData = evolutionChainUrlResponse.data
+
+      setInformationAboutThePokemon({
+        id:pokemonId,
+        name:pokemonName,
+        base_exp:pokemonBaseExp,
+        height:pokemonHeight,
+        weight:pokemonWeight,
+        image:pokemonImage,
+        abilities:pokemonAbilities,
+        stat:pokemonStats,
+        pokedex_entry:pokemonPokedexEntry,
+      }) 
+      setstate(evolutionChainData)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  // END AXIO
+  // OTHER FUNCTION
+  // useEffect pour fetch data
+  useEffect(() => {
+    if (url) {
+      fecthDataSinglePokemon();
+    }
+  }, [url]);
+
+  // Console log pour les test
+  console.log(informationAboutThePokemon);
+  
+
   return (
+    
     <div className="pokedex-container_information">
-
-      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png" className="pokemonCard-image"/>
-      <p className="pokemonCard-number">#numero</p>
-      <p className="pokemonCard-name">Name</p>
+      {informationAboutThePokemon.image ? 
+        <Skeleton variant="rectangular" className="pokemonCard-image" width={300} height={300}/>
+      :
+        <img src={informationAboutThePokemon.image} className="pokemonCard-image"/>
+      }
+      
+      <p className="pokemonCard-number">#{informationAboutThePokemon.id}</p>
+      <p className="pokemonCard-name">{informationAboutThePokemon.name}</p>
 
       <div className="pokedex-entry">
         <h2>POKÉDEX ENTRY</h2>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi, dolorem esse nisi aut ducimus cumque.</p>
+        <p>{informationAboutThePokemon.pokedex_entry}</p>
       </div>
 
       <h3>ABILITIES</h3>
       <p className="abilities">
-        <InfoSpan insideText="Torrent"/>
-        <InfoSpan insideText="Defiant"/>
+          {informationAboutThePokemon.abilities && informationAboutThePokemon.abilities.length > 0 ? (
+          informationAboutThePokemon.abilities.map((eachAbilitie, index) => (
+            <InfoSpan key={index} insideText={eachAbilitie} />
+          ))
+          ) : (
+            <InfoSpan insideText="null" />
+          )}
       </p>
 
       <div className="physicStat">
