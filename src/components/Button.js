@@ -4,10 +4,10 @@ import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutl
 
 const Button = ({inversed}) => {
   return (
-    <p>
+    <p className="buttonSwitch">
     {!inversed ?
         <>
-            <svg data-testid="ArrowBackIosNewOutlinedIcon"></svg>
+            <ArrowBackIosNewOutlinedIcon />
             <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png"/>
             <span>Name</span>
             <span>#numero</span> 
@@ -17,7 +17,7 @@ const Button = ({inversed}) => {
             <span>#numero</span> 
             <span>Name</span>
             <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png"/>
-            <svg data-testid="ArrowBackIosNewOutlinedIcon"></svg>
+            <ArrowForwardIosOutlinedIcon />
         </>
     }   
     </p>

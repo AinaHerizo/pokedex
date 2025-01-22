@@ -4,7 +4,11 @@
 @import "../components/InformationCard";
 @import "../components/InfoSpan";
 @import "mixing";
+@import "../components/InfoStat";
+@import '../components/EvolutionLineage';
+@import "../components/Button";
 
+$refreshDimension:40px;
 
 body{
     background-color: $bg;
@@ -19,23 +23,75 @@ body{
         font-size: $n-size;
     }
 
-
-    .pokedex-container{
-        display: flex;
-        flex-wrap: wrap;
-        align-content: center;
-        gap: 50px;
-        margin-top: 75px;
-        align-items: flex-start;
-        justify-content: center;
-        // child
-        .pokedex-container_list{
-            display: grid;
-            max-width: 1000px;
-            column-gap: 35px;
-            row-gap: 75px;
-            grid-template-columns: repeat(auto-fit, minmax($widthCard, 1fr));
+    .pokedex {
+        margin-bottom: 50px;
+        // CHILD
+        .filter-container{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap:50px;
+            width: fit-content;
+            margin: auto;
+            .filter-container_blockOne {
+                display: flex;
+                justify-content: space-between;
+                flex-direction: row;
+                width: 1000px;
+                .block {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    label{
+                        &:not(:first-child){
+                            margin-left: 30px
+                        }
+                    }
+                }
+            }
+            .filter-container_blockTwo{
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 15px;
+                .refresh{
+                    height: $refreshDimension;
+                    width: $refreshDimension;
+                    background: $grey;
+                    padding: 5px;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    transition: color .5s ease-in-out;
+                    &:hover{
+                        color: $white;
+                        transition: color .5s ease-in-out;
+                    }
+                }
+            }
+        }
+        .pokedex-container{
+            display: flex;
+            flex-wrap: wrap;
+            align-content: center;
+            gap: 50px;
+            margin-top: 75px;
+            align-items: flex-start;
+            justify-content: center;
+            // child
+            .pokedex-container_list{
+                display: grid;
+                max-width: 1000px;
+                column-gap: 35px;
+                row-gap: 75px;
+                grid-template-columns: repeat(auto-fit, minmax($widthCard, 1fr));
+                .pageSwitch{
+                    width: 350px;
+                    grid-column: 2;
+                    margin-left: -25px;
+                }
+            }
         }
     }
+    
 }
 

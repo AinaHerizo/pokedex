@@ -1,0 +1,21 @@
+@import "../styles/variable";
+
+.buttonSwitch{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    svg{
+        transition: color .5s ease-in-out;
+    }
+    &:hover{
+        svg{
+            color: $grey;
+            transition: color .3s color ease-in-out;
+        }
+    }
+    img {
+        margin: -15px -20px;
+    }
+}

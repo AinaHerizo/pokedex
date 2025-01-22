@@ -1,0 +1,30 @@
+@import "../styles/variable";
+
+
+.statList-container {
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    li {
+        display: flex    ;
+        flex-direction: column;
+        gap: 15px;
+        background: $bg;
+        border-radius: 20px;
+        width: 50px;
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+        &:last-child{
+            background: #90b0ff;
+        }
+        .statList-title {
+            aspect-ratio: 1 / 1;
+            width: 40px;
+            border-radius: 100%;
+            align-content: center;
+            color:$white;
+        }
+    }
+}

@@ -48,7 +48,7 @@ const InformationCard = () => {
       <h3>EVOLUTION</h3>
       <EvolutionLineage />
 
-      <div>
+      <div className="buttonContainer">
         <Button inversed={false}/>
         <Button inversed={true}/>
       </div>

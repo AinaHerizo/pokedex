@@ -1,0 +1,11 @@
+@import '../styles/variable';
+
+.lineage{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .InfoSpan{
+        color: $grey;
+        border: none;
+    }
+}
