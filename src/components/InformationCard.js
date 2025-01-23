@@ -1,6 +1,7 @@
 import React from 'react'
 import Card from './Card.js'
 import InfoSpan from './InfoSpan.js'
+import WeaknessType from './WeaknessType.js'
 import InfoStat from './InfoStat.js'
 import EvolutionLineage from './EvolutionLineage.js'
 import Button from './Button.js'
@@ -12,7 +13,7 @@ const InformationCard = ({url}) => {
   // STATE
   const [informationAboutThePokemon, setInformationAboutThePokemon] = useState({})
   // test
-  const [state, setstate] = useState()
+  // const [state, setstate] = useState()
   
   // AXIOS
   const fecthDataSinglePokemon = async () => {
@@ -35,6 +36,33 @@ const InformationCard = ({url}) => {
       // evolution url
       const evolutionChainUrlResponse = await axios.get(pokedexData.evolution_chain.url)
       const evolutionChainData = evolutionChainUrlResponse.data
+      // damage relation
+      const pokemonAllTypes = pokemonDetails.types.map((eachType)=> eachType.type.url)
+      const pokemonTypesDetails = await Promise.all(
+        pokemonAllTypes.map(async (eachTypesUrl) => {
+          try {
+            const eachTypesResponse = await axios.get(eachTypesUrl)
+            // test
+            const data = eachTypesResponse.data
+            // end test
+            const eachTypesDoubleDamage = eachTypesResponse.data.damage_relations.double_damage_from.map((eachTypeDoubleDamage)=> eachTypeDoubleDamage.name).flat()
+            const eachTypesHalfDamage = eachTypesResponse.data.damage_relations.half_damage_from.map((eachTypeHalfDamage)=> eachTypeHalfDamage.name)
+            const eachTypesNoDamage = eachTypesResponse.data.damage_relations.no_damage_from.map((eachTypeNoDamage)=> eachTypeNoDamage.name)
+
+            
+            return [eachTypesDoubleDamage, eachTypesHalfDamage, eachTypesNoDamage]
+          } catch (error) {
+            console.error(error);
+          }
+        })
+      )
+      const pokemonDoubleDamageType = pokemonTypesDetails.map((eachType)=> eachType[0]).flat()
+      const pokemonHalfDamageType = pokemonTypesDetails.map((eachType)=> eachType[1]).flat()
+      const pokemonNoDamageType = pokemonTypesDetails.map((eachType)=> eachType[2]).flat()
+      // Filtered element with *1 or none damage
+      const allPokemonDoubleDamageType = pokemonDoubleDamageType.filter((type) => !pokemonHalfDamageType.includes(type) && !pokemonNoDamageType.includes(type))
+      // setstate(allPokemonDoubleDamageType)
+
 
       setInformationAboutThePokemon({
         id:pokemonId,
@@ -46,8 +74,8 @@ const InformationCard = ({url}) => {
         abilities:pokemonAbilities,
         stat:pokemonStats,
         pokedex_entry:pokemonPokedexEntry,
+        weakness:allPokemonDoubleDamageType,
       }) 
-      setstate(evolutionChainData)
     } catch (error) {
       console.error(error);
     }
@@ -60,15 +88,19 @@ const InformationCard = ({url}) => {
       fecthDataSinglePokemon();
     }
   }, [url]);
+  // Function for stat value
+  const getStatValue = (index) => {
+    return informationAboutThePokemon.stat ? informationAboutThePokemon.stat[index] : "0";
+  };
 
   // Console log pour les test
-  console.log(informationAboutThePokemon);
+  // console.log(informationAboutThePokemon);
   
 
   return (
     
     <div className="pokedex-container_information">
-      {informationAboutThePokemon.image ? 
+      {!informationAboutThePokemon.image ? 
         <Skeleton variant="rectangular" className="pokemonCard-image" width={300} height={300}/>
       :
         <img src={informationAboutThePokemon.image} className="pokemonCard-image"/>
@@ -96,24 +128,24 @@ const InformationCard = ({url}) => {
       <div className="physicStat">
         <div>
             <h3>HEIGHT</h3>
-            <InfoSpan insideText="1.7m"/>
+            <InfoSpan insideText={!informationAboutThePokemon.height ? "..." : ((informationAboutThePokemon.height/10)+" m")}/>
         </div>
         <div>
             <h3>WEIGHT</h3>
-            <InfoSpan insideText="84.5kg"/>
+            <InfoSpan insideText={!informationAboutThePokemon.weight ? "..." : ((informationAboutThePokemon.weight/10)+" kg")}/>
         </div>
         <div>
             <h3>WEAKNESSES</h3>
-            <InfoSpan insideText="x2"/>
+            <WeaknessType weaknesses={informationAboutThePokemon.weakness.length === 0 ? "no weakness" : informationAboutThePokemon.weakness}/>
         </div>
         <div>
             <h3>BASE EXP</h3>
-            <InfoSpan insideText={239}/>
+            <InfoSpan insideText={!informationAboutThePokemon.base_exp ? "..." : informationAboutThePokemon.base_exp}/>
         </div>
       </div>
 
       <h3>STATS</h3>
-      <InfoStat hp={84} atk={86} def={88} spA={111} spD={101} spd={60}/>
+      <InfoStat  hp={getStatValue(0)} atk={getStatValue(1)} def={getStatValue(2)} spA={getStatValue(3)} spD={getStatValue(4)} spd={getStatValue(5)}/>
       <h3>EVOLUTION</h3>
       <EvolutionLineage />
 

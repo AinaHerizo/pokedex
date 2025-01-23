@@ -22,10 +22,10 @@ const styleColor = {
     dark: "rgb(65, 25, 25)",
 }
 
-const Card = ({pokemonImage ,pokemonId , pokemonName, pokemonTypes}) => {
+const Card = ({pokemonImage ,pokemonId , pokemonName, pokemonTypes, onClick }) => {
 
   return (
-    <div className="pokemonCard">
+    <div className="pokemonCard" onClick={onClick}>
         <img src={pokemonImage} className="pokemonCard-image"/>
         <p className="pokemonCard-number">N°{pokemonId}</p>
         <p className="pokemonCard-name">{pokemonName}</p>

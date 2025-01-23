@@ -21,7 +21,7 @@ function App() {
   const [maxElement, setMaxElement] = useState()
   const elementPerPage = 9
   const [numberPage, setNumberPage] = useState()
-  const [actualInformationBlock, setActualInformationBlock] = useState()
+  const [actualInformationBlock, setActualInformationBlock] = useState("https://pokeapi.co/api/v2/pokemon/1/")
     // test
     // const [details, setDetails] = useState([])
     // endtest
@@ -82,9 +82,19 @@ function App() {
       const handlePageChange = (newPage) => {
         setCurrentPage(newPage)
       };
+      useEffect(() => {
+        setActualInformationBlock(`https://pokeapi.co/api/v2/pokemon/${indexOfFirstPokemonInThePage + 1}`);
+      }, [currentPage]);
+  // function for information card changement
+  const handleCardClick = (newUrl) => {
+    // test
+    console.log("Card clicked! New URL:", newUrl);
+    // end test
+    setActualInformationBlock(newUrl)
+  }
 
   // console.log for test
-  // console.log(pokedex);
+  console.log("CURRENT URL : " + actualInformationBlock);
   
   
 
@@ -115,12 +125,12 @@ function App() {
             ))
             : 
             pokemonInPage.map((eachPokemonInPokedex) => (
-              <Card pokemonImage={eachPokemonInPokedex.image} pokemonId={eachPokemonInPokedex.id}  pokemonName={eachPokemonInPokedex.name} pokemonTypes={eachPokemonInPokedex.types}/>
+              <Card onClick={() => handleCardClick(eachPokemonInPokedex.url)} pokemonImage={eachPokemonInPokedex.image} pokemonId={eachPokemonInPokedex.id}  pokemonName={eachPokemonInPokedex.name} pokemonTypes={eachPokemonInPokedex.types}/>
             ))
           }
           <Pagination count={numberPage} variant="outlined" className="pageSwitch" onChange={(event, value) => handlePageChange(value)} page={currentPage}/>
         </div>
-        <InformationCard url="https://pokeapi.co/api/v2/pokemon/1/"/>
+        <InformationCard url={actualInformationBlock}/>
       </div>
     </div>
   );
