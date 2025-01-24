@@ -30,7 +30,7 @@ function App() {
   // AXIOS
   const fetchData = async () => {
     try {
-      const response = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=648")
+      const response = await axios.get("https://pokeapi.co/api/v2/pokemon?limit=1025")
       const pokedexJson = response.data.results
       // take max element
       setMaxElement(pokedexJson.length)

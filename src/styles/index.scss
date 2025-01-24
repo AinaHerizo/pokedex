@@ -7,6 +7,8 @@
 @import "../components/InfoStat";
 @import '../components/EvolutionLineage';
 @import "../components/Button";
+@import "../components/WeaknessType";
+@import "../components/ConditionEvolutionSpan";
 
 $refreshDimension:40px;
 
@@ -85,9 +87,9 @@ body{
                 row-gap: 75px;
                 grid-template-columns: repeat(auto-fit, minmax($widthCard, 1fr));
                 .pageSwitch{
-                    width: 350px;
+                    width: 400px;
                     grid-column: 2;
-                    margin-left: -25px;
+                    margin-left: -30px;
                 }
             }
         }

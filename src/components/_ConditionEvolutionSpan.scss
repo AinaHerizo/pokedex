@@ -1,0 +1,13 @@
+@import '../styles/variable';
+
+.evolution_condition{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 5px;
+    background: $bg;
+    border: 1px solid $grey;
+    padding: 5px 20px;
+    border-radius: 10px;
+    width: fit-content;
+}

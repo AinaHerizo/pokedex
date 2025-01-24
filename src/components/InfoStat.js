@@ -12,7 +12,7 @@ const styleColor = {
 }
 
 const InfoStat = ({hp,atk,def,spA,spD,spd}) => {
-    const tot = hp+atk+def+spA+spD+spd
+    const tot = Number(hp+atk+def+spA+spD+spd)
 
   return (
     <ul className="statList-container">

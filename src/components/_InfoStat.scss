@@ -6,6 +6,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
+    margin-bottom: $box-margin;
     li {
         display: flex    ;
         flex-direction: column;

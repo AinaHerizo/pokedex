@@ -1,0 +1,20 @@
+@import "../styles/variable";
+
+.weaknesses{
+    background: $bg;
+    border: 1px solid $grey;
+    padding: 5px 20px;
+    border-radius: 10px;
+    font-size: $n-size;
+    width: fit-content;
+    display: flex;
+    gap: 7px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    .weakness-type {
+        padding: 5px;
+        border-radius: 5px;
+        color: #fff;
+    }
+}

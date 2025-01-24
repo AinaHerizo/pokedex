@@ -33,9 +33,6 @@ const InformationCard = ({url}) => {
       const pokedexUrlResponse = await axios.get(pokemonDetails.species.url)
       const pokedexData = pokedexUrlResponse.data
       const pokemonPokedexEntry = pokedexData.flavor_text_entries.find((entry) => entry.language.name === "en" && entry.version.name === "shield")?.flavor_text || "No description available"
-      // evolution url
-      const evolutionChainUrlResponse = await axios.get(pokedexData.evolution_chain.url)
-      const evolutionChainData = evolutionChainUrlResponse.data
       // damage relation
       const pokemonAllTypes = pokemonDetails.types.map((eachType)=> eachType.type.url)
       const pokemonTypesDetails = await Promise.all(
@@ -43,13 +40,11 @@ const InformationCard = ({url}) => {
           try {
             const eachTypesResponse = await axios.get(eachTypesUrl)
             // test
-            const data = eachTypesResponse.data
+            // const data = eachTypesResponse.data
             // end test
             const eachTypesDoubleDamage = eachTypesResponse.data.damage_relations.double_damage_from.map((eachTypeDoubleDamage)=> eachTypeDoubleDamage.name).flat()
             const eachTypesHalfDamage = eachTypesResponse.data.damage_relations.half_damage_from.map((eachTypeHalfDamage)=> eachTypeHalfDamage.name)
             const eachTypesNoDamage = eachTypesResponse.data.damage_relations.no_damage_from.map((eachTypeNoDamage)=> eachTypeNoDamage.name)
-
-            
             return [eachTypesDoubleDamage, eachTypesHalfDamage, eachTypesNoDamage]
           } catch (error) {
             console.error(error);
@@ -61,9 +56,81 @@ const InformationCard = ({url}) => {
       const pokemonNoDamageType = pokemonTypesDetails.map((eachType)=> eachType[2]).flat()
       // Filtered element with *1 or none damage
       const allPokemonDoubleDamageType = pokemonDoubleDamageType.filter((type) => !pokemonHalfDamageType.includes(type) && !pokemonNoDamageType.includes(type))
-      // setstate(allPokemonDoubleDamageType)
+      const pokemonWeakness = [...new Set(allPokemonDoubleDamageType)]
+      // evolution url
+      const evolutionChainUrlResponse = await axios.get(pokedexData.evolution_chain.url)
+      const evolutionChainData = evolutionChainUrlResponse.data.chain 
+      // RECURSIVE FUNCTION FOR CHAIN DATA
+      const getAllSpecies = (chain) => {
+        const speciesList = [];
+        const traverseChain = (node) => {
+          if (node.species) {
+            speciesList.push(node.species.url);
+          }
+          // Vérifie si l'enfant existe, et parcours les enfants récursivement
+          if (node.evolves_to && node.evolves_to.length > 0) {
+            node.evolves_to.forEach((childNode) => traverseChain(childNode));
+          }
+        };
+        traverseChain(chain);
+        return speciesList;
+      };
+      const getAllSpeciesEvolveCondition = (chain) => {
+        const speciesList = [];
+        const traverseChain = (node) => {
+          if (node.evolution_details) {
+            speciesList.push(node.evolution_details.length==0 ? null : node.evolution_details );
+          }
+          // Vérifie si l'enfant existe, et parcours les enfants récursivement
+          if (node.evolves_to && node.evolves_to.length > 0) {
+            node.evolves_to.forEach((childNode) => traverseChain(childNode));
+          }
+        };
+        traverseChain(chain);
+        return speciesList;
+      };
+      // END RECURSIVE FUNCTION
+      const speciesEvolutionUrl = getAllSpecies(evolutionChainData)
+      const speciesEvoConditionDetails = getAllSpeciesEvolveCondition(evolutionChainData)
+      // const speciesEvoConditionEachMap = speciesEvoConditionDetails.map((eachConditionMap)=> {
+      //   if (eachConditionMap != null && Array.isArray(eachConditionMap)) {
+      //     const firstElement = eachConditionMap[0];
+      //     // Vérifie si le premier élément est un tableau avant d'appeler filter
+      //     if (Array.isArray(firstElement)) {
+      //       return firstElement.filter((test) => test); // Filtre les éléments "falsy" (null, undefined, false, etc.)
+      //     }
+      //     // Si ce n'est pas un tableau, retourne null ou un autre traitement
+      //     return null;
+      //   }
+           
+      // })
+      const speciesEvoConditionEachMap = speciesEvoConditionDetails
+        .filter((eachConditionMap) => eachConditionMap != null && Array.isArray(eachConditionMap)) // Garde uniquement les tableaux valides
+        .map((eachConditionMap) => eachConditionMap[0]) // Récupère le premier élément de chaque tableau
+        .filter((firstElement) => firstElement !== undefined); // Supprime les valeurs undefined
+      const speciesAllTrueCondition = speciesEvoConditionEachMap.map((eachCondition)=>{
+        const filteredEntries = Object.entries(eachCondition).filter(([key,value]) => value != null && value != false)
+        return filteredEntries[0]
+      })
+      const speciesEvolutionImage = await Promise.all(
+        speciesEvolutionUrl.map(async (eachSpeciesUrl) => {
+          try {
+            const eachSpeciesDetailsResponse = await axios.get(eachSpeciesUrl)
+            const eachSpeciesPokemonUrl = eachSpeciesDetailsResponse.data.varieties[0].pokemon.url
+            const eachPokemonUrlResponse = await axios.get(eachSpeciesPokemonUrl)
+            const eachPokemonUrlImage = eachPokemonUrlResponse.data.sprites.front_default
+            return eachPokemonUrlImage
+          } catch (error) {
+            console.error(error);
+            
+          }
+        })
+      )
 
-
+      // setState for test
+      // setstate(speciesAllTrueCondition)
+      // End test
+      
       setInformationAboutThePokemon({
         id:pokemonId,
         name:pokemonName,
@@ -74,7 +141,9 @@ const InformationCard = ({url}) => {
         abilities:pokemonAbilities,
         stat:pokemonStats,
         pokedex_entry:pokemonPokedexEntry,
-        weakness:allPokemonDoubleDamageType,
+        weakness:pokemonWeakness,
+        evolutionImages:speciesEvolutionImage,
+        evolutionCondition:speciesAllTrueCondition,
       }) 
     } catch (error) {
       console.error(error);
@@ -94,7 +163,7 @@ const InformationCard = ({url}) => {
   };
 
   // Console log pour les test
-  // console.log(informationAboutThePokemon);
+  // console.log(state);
   
 
   return (
@@ -136,7 +205,15 @@ const InformationCard = ({url}) => {
         </div>
         <div>
             <h3>WEAKNESSES</h3>
-            <WeaknessType weaknesses={informationAboutThePokemon.weakness.length === 0 ? "no weakness" : informationAboutThePokemon.weakness}/>
+            {informationAboutThePokemon.weakness && Array.isArray(informationAboutThePokemon.weakness) ? (
+              informationAboutThePokemon.weakness.length > 0 ? (
+                  <WeaknessType weaknesses={informationAboutThePokemon.weakness}/>
+              ) : (
+                <InfoSpan insideText="No weaknesses available" />
+              )
+            ) : (
+              <InfoSpan insideText="..." />
+            )}
         </div>
         <div>
             <h3>BASE EXP</h3>
@@ -147,7 +224,7 @@ const InformationCard = ({url}) => {
       <h3>STATS</h3>
       <InfoStat  hp={getStatValue(0)} atk={getStatValue(1)} def={getStatValue(2)} spA={getStatValue(3)} spD={getStatValue(4)} spd={getStatValue(5)}/>
       <h3>EVOLUTION</h3>
-      <EvolutionLineage />
+      <EvolutionLineage images={informationAboutThePokemon.evolutionImages} condition={informationAboutThePokemon.evolutionCondition}/>
 
       <div className="buttonContainer">
         <Button inversed={false}/>

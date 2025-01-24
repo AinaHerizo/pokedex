@@ -1,11 +1,16 @@
 @import '../styles/variable';
 
 .lineage{
-    display: flex;
+    display: flex    ;
+    grid-template-columns: repeat(auto-fit, minmax(0px, 1fr));
     justify-content: center;
     align-items: center;
+    gap: 20px;
     .InfoSpan{
         color: $grey;
         border: none;
+    }
+    img {
+        margin: -20px;
     }
 }

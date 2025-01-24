@@ -1,14 +1,44 @@
 import React from 'react'
-import InfoSpan from './InfoSpan.js'
+import ConditionEvolutionSpan from './ConditionEvolutionSpan.js'
+import Skeleton from '@mui/material/Skeleton'
 
-const EvolutionLineage = () => {
+const EvolutionLineage = ({images, condition}) => {
+  console.log(condition);
+  
   return (
     <div className="lineage">
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png"/>
-        <InfoSpan insideText={"Lvl 16"}/>
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png"/>
-        <InfoSpan insideText={"Lvl 36"}/>
-        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/35.png"/>
+        {(images && Array.isArray(images)) && (condition && Array.isArray(condition)) ? (
+          images.map((url, index) => (
+            <>
+              <img src={url} alt={`Image ${index + 1}`} />
+              {condition[index] ? (
+                <ConditionEvolutionSpan 
+                  conditionType={condition[index][0]} 
+                  conditionExecute={condition[index][1]} 
+                />
+              ) : (
+                null
+              )}
+            </>
+          ))
+          
+          
+          // <>
+          //   {images.map((url)=> <img src={url}/>)}
+          //   {condition.map(([key,value], index) => <ConditionEvolutionSpan conditionType={key} conditionExecute={value}/>)}
+          // </>
+
+
+          // <img src={images[0]}/>
+          // <ConditionEvolutionSpan conditionType="min_lvl" conditionExecute="16"/>
+          // <img src={images[1]}/>
+          // <ConditionEvolutionSpan conditionType="min_lvl" conditionExecute="36"/>
+          // <img src={images[2]}/>
+        ) : 
+        Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} variant="rectangular" width={80} height={80} />
+        ))
+        }
     </div>
   )
 }
