@@ -88,8 +88,11 @@ function App() {
   // function for information card changement
   const handleCardClick = (newUrl) => {
     // test
-    console.log("Card clicked! New URL:", newUrl);
+    // console.log("Card clicked! New URL:", newUrl);
     // end test
+    setActualInformationBlock(newUrl)
+  }
+  const handleButtonChange = (newUrl) => {
     setActualInformationBlock(newUrl)
   }
 
@@ -130,7 +133,7 @@ function App() {
           }
           <Pagination count={numberPage} variant="outlined" className="pageSwitch" onChange={(event, value) => handlePageChange(value)} page={currentPage}/>
         </div>
-        <InformationCard url={actualInformationBlock}/>
+        <InformationCard url={actualInformationBlock} handleButtonChange={handleButtonChange}/>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import axios  from "axios"
 import { useEffect, useState } from 'react'
 import Skeleton from '@mui/material/Skeleton'
 
-const InformationCard = ({url}) => {
+const InformationCard = ({url, handleButtonChange}) => {
   // STATE
   const [informationAboutThePokemon, setInformationAboutThePokemon] = useState({})
   // test
@@ -32,6 +32,9 @@ const InformationCard = ({url}) => {
       // pokedex url
       const pokedexUrlResponse = await axios.get(pokemonDetails.species.url)
       const pokedexData = pokedexUrlResponse.data
+      // setState for test
+      // setstate(pokedexData)
+      // End test
       const pokemonPokedexEntry = pokedexData.flavor_text_entries.find((entry) => entry.language.name === "en" && entry.version.name === "shield")?.flavor_text || "No description available"
       // damage relation
       const pokemonAllTypes = pokemonDetails.types.map((eachType)=> eachType.type.url)
@@ -39,9 +42,6 @@ const InformationCard = ({url}) => {
         pokemonAllTypes.map(async (eachTypesUrl) => {
           try {
             const eachTypesResponse = await axios.get(eachTypesUrl)
-            // test
-            // const data = eachTypesResponse.data
-            // end test
             const eachTypesDoubleDamage = eachTypesResponse.data.damage_relations.double_damage_from.map((eachTypeDoubleDamage)=> eachTypeDoubleDamage.name).flat()
             const eachTypesHalfDamage = eachTypesResponse.data.damage_relations.half_damage_from.map((eachTypeHalfDamage)=> eachTypeHalfDamage.name)
             const eachTypesNoDamage = eachTypesResponse.data.damage_relations.no_damage_from.map((eachTypeNoDamage)=> eachTypeNoDamage.name)
@@ -126,10 +126,6 @@ const InformationCard = ({url}) => {
           }
         })
       )
-
-      // setState for test
-      // setstate(speciesAllTrueCondition)
-      // End test
       
       setInformationAboutThePokemon({
         id:pokemonId,
@@ -161,7 +157,6 @@ const InformationCard = ({url}) => {
   const getStatValue = (index) => {
     return informationAboutThePokemon.stat ? informationAboutThePokemon.stat[index] : "0";
   };
-
   // Console log pour les test
   // console.log(state);
   
@@ -227,8 +222,8 @@ const InformationCard = ({url}) => {
       <EvolutionLineage images={informationAboutThePokemon.evolutionImages} condition={informationAboutThePokemon.evolutionCondition}/>
 
       <div className="buttonContainer">
-        <Button inversed={false}/>
-        <Button inversed={true}/>
+        <Button inversed={false} currentPokemonId={informationAboutThePokemon.id - 1} onClick={() => handleButtonChange(`https://pokeapi.co/api/v2/pokemon/${informationAboutThePokemon.id - 1}`)}/>
+        <Button inversed={true} currentPokemonId={informationAboutThePokemon.id + 1} onClick={() => handleButtonChange(`https://pokeapi.co/api/v2/pokemon/${informationAboutThePokemon.id + 1}`)}/>
       </div>
     </div> 
   )

@@ -3,7 +3,6 @@ import ConditionEvolutionSpan from './ConditionEvolutionSpan.js'
 import Skeleton from '@mui/material/Skeleton'
 
 const EvolutionLineage = ({images, condition}) => {
-  console.log(condition);
   
   return (
     <div className="lineage">
@@ -14,7 +13,11 @@ const EvolutionLineage = ({images, condition}) => {
               {condition[index] ? (
                 <ConditionEvolutionSpan 
                   conditionType={condition[index][0]} 
-                  conditionExecute={condition[index][1]} 
+                  conditionExecute={
+                    typeof condition[index][1] === 'object' && condition[index][1] !== null 
+                      ? condition[index][1].name 
+                      : condition[index][1]
+                  }  
                 />
               ) : (
                 null
