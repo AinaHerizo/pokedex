@@ -25,6 +25,8 @@ function App() {
     // test
     // const [details, setDetails] = useState([])
     // endtest
+  // State for filter
+  const [searchTerm, setSearchTerm] = useState("");
   // END STATE
 
   // AXIOS
@@ -75,9 +77,22 @@ function App() {
       }
     }, [maxElement])
     // current page and number of pokemon in each page
+        
       const indexOfLastPokemonInThePage = currentPage * elementPerPage
       const indexOfFirstPokemonInThePage = indexOfLastPokemonInThePage - elementPerPage
-      const pokemonInPage = pokedex.slice(indexOfFirstPokemonInThePage,indexOfLastPokemonInThePage)
+      // filter
+      const filteredPokemons = pokedex.filter((pokemon) =>
+        pokemon && pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      useEffect(() => {
+        setMaxElement(filteredPokemons.length);
+      }, [searchTerm]);
+      
+      // Filter results
+      const pokemonInPage = filteredPokemons
+        .filter((pokemon) => pokemon !== null && pokemon !== undefined)
+        .slice(indexOfFirstPokemonInThePage, indexOfLastPokemonInThePage);
+              
       // handle the changement of page
       const handlePageChange = (newPage) => {
         setCurrentPage(newPage)
@@ -96,8 +111,15 @@ function App() {
     setActualInformationBlock(newUrl)
   }
 
+  // Filter function
+  // Gérer la recherche
+  const handleSearch = (searchValue) => {
+    setSearchTerm(searchValue);
+    setCurrentPage(1); // Réinitialiser à la première page lors d'une recherche
+  };
+
   // console.log for test
-  console.log("CURRENT URL : " + actualInformationBlock);
+  // console.log("CURRENT URL : " + actualInformationBlock);
   
   
 
@@ -109,7 +131,10 @@ function App() {
           <TextField
             id="searchPokemon"
             label="Search your pokemon" 
-            style={{background:colorStyle.white}}         
+            style={{background:colorStyle.white}}
+            onChange={(event) => {
+              handleSearch(event.target.value)
+            }}         
           />
           <div className="block">
             <NumberTo background={colorStyle.white}/>
@@ -119,6 +144,7 @@ function App() {
           <TypeFilter background={colorStyle.white}/>
           <RefreshOutlinedIcon className="refresh"/>
         </div>
+        <Pagination count={numberPage} variant="outlined" className="pageSwitch" onChange={(event, value) => handlePageChange(value)} page={currentPage}/>
       </div>
       <div className="pokedex-container">
         <div className="pokedex-container_list">
@@ -127,11 +153,16 @@ function App() {
               <Skeleton key={index} variant="rectangular" width={280} height={150} />
             ))
             : 
-            pokemonInPage.map((eachPokemonInPokedex) => (
-              <Card onClick={() => handleCardClick(eachPokemonInPokedex.url)} pokemonImage={eachPokemonInPokedex.image} pokemonId={eachPokemonInPokedex.id}  pokemonName={eachPokemonInPokedex.name} pokemonTypes={eachPokemonInPokedex.types}/>
+            (pokemonInPage.length === 0 ? (
+              <p>No Pokémon found. Try a different search!</p>
+            ) : (
+              pokemonInPage.map((eachPokemonInPokedex) => (
+                <Card key={eachPokemonInPokedex.id} onClick={() => handleCardClick(eachPokemonInPokedex.url)} pokemonImage={eachPokemonInPokedex.image} pokemonId={eachPokemonInPokedex.id}  pokemonName={eachPokemonInPokedex.name} pokemonTypes={eachPokemonInPokedex.types}/>
+              ))
             ))
+
+            
           }
-          <Pagination count={numberPage} variant="outlined" className="pageSwitch" onChange={(event, value) => handlePageChange(value)} page={currentPage}/>
         </div>
         <InformationCard url={actualInformationBlock} handleButtonChange={handleButtonChange}/>
       </div>
